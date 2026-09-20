@@ -250,19 +250,17 @@ function Library:CreateWindow(options)
     --=========================================================
 
     local Sidebar = Create("Frame", {
-
         Name = "Sidebar",
-
         Parent = Main,
-
+    
         Size = UDim2.new(0, 150, 1, -55),
-
         Position = UDim2.fromOffset(0, 55),
-
-        BackgroundColor3 =
-            Library.Theme.Secondary,
-
-        BorderSizePixel = 0
+    
+        BackgroundColor3 = Library.Theme.Secondary,
+    
+        BorderSizePixel = 0,
+    
+        ZIndex = 5
     })
 
     AddPadding(Sidebar, 10)
@@ -281,18 +279,17 @@ function Library:CreateWindow(options)
     --=========================================================
 
     local Content = Create("Frame", {
-
         Name = "Content",
-
         Parent = Main,
-
+    
         Size = UDim2.new(1, -150, 1, -55),
-
         Position = UDim2.fromOffset(150, 55),
-
+    
         BackgroundTransparency = 1,
-
-        BorderSizePixel = 0
+    
+        BorderSizePixel = 0,
+    
+        ZIndex = 1
     })
 
     --=========================================================
@@ -319,28 +316,23 @@ function Library:CreateWindow(options)
         --=====================================================
 
         local Button = Create("TextButton", {
-
             Name = name,
-
             Parent = Sidebar,
-
+        
             Size = UDim2.new(1, 0, 0, 40),
-
-            BackgroundColor3 =
-                Library.Theme.Tertiary,
-
+        
+            BackgroundColor3 = Library.Theme.Tertiary,
+        
             Text = name,
-
-            TextColor3 =
-                Library.Theme.SubText,
-
+            TextColor3 = Library.Theme.SubText,
+        
             Font = Enum.Font.GothamBold,
-
             TextSize = 13,
-
+        
             AutoButtonColor = false,
-
-            BorderSizePixel = 0
+            BorderSizePixel = 0,
+        
+            ZIndex = 10
         })
 
         AddCorner(Button, 8)
