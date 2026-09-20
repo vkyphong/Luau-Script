@@ -307,475 +307,420 @@ function Library:CreateWindow(options)
     -- CREATE TAB
     --=========================================================
 
-    function Window:CreateTab(name)
+function Window:CreateTab(name)
 
-        local Tab = {}
+    local WindowObject = self
 
-        --=====================================================
-        -- TAB BUTTON
-        --=====================================================
+    local Tab = {}
 
-        local Button = Create("TextButton", {
-            Name = name,
-            Parent = Sidebar,
-        
-            Size = UDim2.new(1, 0, 0, 40),
-        
-            BackgroundColor3 = Library.Theme.Tertiary,
-        
-            Text = name,
-            TextColor3 = Library.Theme.SubText,
-        
-            Font = Enum.Font.GothamBold,
-            TextSize = 13,
-        
-            AutoButtonColor = false,
-            BorderSizePixel = 0,
-        
-            ZIndex = 10
-        })
+    --=====================================================
+    -- TAB BUTTON
+    --=====================================================
 
-        AddCorner(Button, 8)
+    local Button = Create("TextButton", {
+        Name = name,
 
-        --=====================================================
-        -- PAGE
-        --=====================================================
+        Parent = WindowObject.Sidebar,
 
-        local Page = Create("ScrollingFrame", {
+        Size = UDim2.new(1, 0, 0, 40),
 
-            Name = name .. "_Page",
+        BackgroundColor3 =
+            Library.Theme.Tertiary,
 
-            Parent = Content,
+        Text = name,
 
-            Size = UDim2.fromScale(1, 1),
+        TextColor3 =
+            Library.Theme.SubText,
 
-            BackgroundTransparency = 1,
+        Font = Enum.Font.GothamBold,
 
-            BorderSizePixel = 0,
+        TextSize = 13,
 
-            ScrollBarThickness = 3,
+        AutoButtonColor = false,
 
-            ScrollBarImageColor3 =
-                Library.Theme.Text,
+        BorderSizePixel = 0,
 
-            Visible = false,
+        ZIndex = 10
+    })
 
-            CanvasSize = UDim2.new()
-        })
+    AddCorner(Button, 8)
 
-        AddPadding(Page, 12)
+    --=====================================================
+    -- PAGE
+    --=====================================================
 
-        local Layout = Create("UIListLayout", {
+    local Page = Create("ScrollingFrame", {
+
+        Name = name .. "_Page",
+
+        Parent = WindowObject.Content,
+
+        Size = UDim2.fromScale(1, 1),
+
+        BackgroundTransparency = 1,
+
+        BorderSizePixel = 0,
+
+        ScrollBarThickness = 3,
+
+        ScrollBarImageColor3 =
+            Library.Theme.Text,
+
+        Visible = false,
+
+        CanvasSize = UDim2.new(),
+
+        ZIndex = 2
+    })
+
+    AddPadding(Page, 12)
+
+    local Layout = Create("UIListLayout", {
+
+        Parent = Page,
+
+        Padding = UDim.new(0, 8),
+
+        SortOrder = Enum.SortOrder.LayoutOrder
+    })
+
+    Layout:GetPropertyChangedSignal(
+        "AbsoluteContentSize"
+    ):Connect(function()
+
+        Page.CanvasSize = UDim2.new(
+            0,
+            0,
+            0,
+            Layout.AbsoluteContentSize.Y + 24
+        )
+
+    end)
+
+    --=====================================================
+    -- TAB OBJECT
+    --=====================================================
+
+    Tab.Button = Button
+    Tab.Page = Page
+
+    -- QUAN TRỌNG
+    Tab.Window = WindowObject
+
+    --=====================================================
+    -- SHOW TAB
+    --=====================================================
+
+    function Tab:Show()
+
+        for _, otherTab in ipairs(WindowObject.Tabs) do
+
+            otherTab.Page.Visible = false
+
+            otherTab.Button.BackgroundColor3 =
+                Library.Theme.Tertiary
+
+            otherTab.Button.TextColor3 =
+                Library.Theme.SubText
+
+        end
+
+        Page.Visible = true
+
+        Button.BackgroundColor3 =
+            Library.Theme.Accent
+
+        Button.TextColor3 =
+            Library.Theme.Background
+
+    end
+
+    --=====================================================
+    -- SECTION
+    --=====================================================
+
+    function Tab:AddSection(sectionName)
+
+        local Section = Create("TextLabel", {
 
             Parent = Page,
 
-            Padding = UDim.new(0, 8),
+            Size = UDim2.new(1, -24, 0, 30),
 
-            SortOrder = Enum.SortOrder.LayoutOrder
+            BackgroundTransparency = 1,
+
+            Text = sectionName,
+
+            TextColor3 =
+                Library.Theme.SubText,
+
+            Font = Enum.Font.GothamBold,
+
+            TextSize = 12,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left
         })
 
-        Layout:GetPropertyChangedSignal(
-            "AbsoluteContentSize"
-        ):Connect(function()
+        return Section
+    end
 
-            Page.CanvasSize = UDim2.new(
-                0,
-                0,
-                0,
-                Layout.AbsoluteContentSize.Y + 24
-            )
+    --=====================================================
+    -- LABEL
+    --=====================================================
+
+    function Tab:AddLabel(text)
+
+        local Label = Create("TextLabel", {
+
+            Parent = Page,
+
+            Size = UDim2.new(1, -24, 0, 35),
+
+            BackgroundTransparency = 1,
+
+            Text = text,
+
+            TextColor3 =
+                Library.Theme.SubText,
+
+            Font = Enum.Font.Gotham,
+
+            TextSize = 13,
+
+            TextWrapped = true,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left
+        })
+
+        return Label
+    end
+
+    --=====================================================
+    -- BUTTON
+    --=====================================================
+
+    function Tab:AddButton(buttonName, callback)
+
+        local ButtonObject = Create("TextButton", {
+
+            Parent = Page,
+
+            Size = UDim2.new(1, -24, 0, 42),
+
+            BackgroundColor3 =
+                Library.Theme.Secondary,
+
+            Text = buttonName,
+
+            TextColor3 =
+                Library.Theme.Text,
+
+            Font = Enum.Font.GothamBold,
+
+            TextSize = 14,
+
+            AutoButtonColor = false,
+
+            BorderSizePixel = 0
+        })
+
+        AddCorner(ButtonObject, 9)
+        AddStroke(ButtonObject)
+
+        ButtonObject.MouseEnter:Connect(function()
+
+            ButtonObject.BackgroundColor3 =
+                Library.Theme.Tertiary
 
         end)
 
-        Tab.Button = Button
-        Tab.Page = Page
-        Tab.Window = self
+        ButtonObject.MouseLeave:Connect(function()
 
-        --=====================================================
-        -- SHOW
-        --=====================================================
+            ButtonObject.BackgroundColor3 =
+                Library.Theme.Secondary
 
-        function Tab:Show()
+        end)
 
-            for _, other in pairs(self.Window.Tabs) do
+        ButtonObject.MouseButton1Click:Connect(function()
 
-                other.Page.Visible = false
+            if callback then
+                callback()
+            end
 
-                other.Button.BackgroundColor3 =
-                    Library.Theme.Tertiary
+        end)
 
-                other.Button.TextColor3 =
-                    Library.Theme.SubText
+        return ButtonObject
+    end
+
+    --=====================================================
+    -- TOGGLE
+    --=====================================================
+
+    function Tab:AddToggle(toggleName, default, callback)
+
+        local Value = default == true
+
+        local ButtonObject = Create("TextButton", {
+
+            Parent = Page,
+
+            Size = UDim2.new(1, -24, 0, 45),
+
+            BackgroundColor3 =
+                Library.Theme.Secondary,
+
+            Text = "",
+
+            AutoButtonColor = false,
+
+            BorderSizePixel = 0
+        })
+
+        AddCorner(ButtonObject, 9)
+        AddStroke(ButtonObject)
+
+        Create("TextLabel", {
+
+            Parent = ButtonObject,
+
+            Size = UDim2.new(1, -70, 1, 0),
+
+            Position = UDim2.fromOffset(15, 0),
+
+            BackgroundTransparency = 1,
+
+            Text = toggleName,
+
+            TextColor3 =
+                Library.Theme.Text,
+
+            Font = Enum.Font.GothamBold,
+
+            TextSize = 14,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left
+        })
+
+        local Switch = Create("Frame", {
+
+            Parent = ButtonObject,
+
+            Size = UDim2.fromOffset(38, 20),
+
+            Position = UDim2.new(
+                1,
+                -50,
+                0.5,
+                -10
+            ),
+
+            BackgroundColor3 =
+                Color3.fromRGB(45, 45, 45),
+
+            BorderSizePixel = 0
+        })
+
+        AddCorner(Switch, 20)
+
+        local Circle = Create("Frame", {
+
+            Parent = Switch,
+
+            Size = UDim2.fromOffset(16, 16),
+
+            Position = UDim2.fromOffset(2, 2),
+
+            BackgroundColor3 =
+                Color3.fromRGB(255, 255, 255),
+
+            BorderSizePixel = 0
+        })
+
+        AddCorner(Circle, 20)
+
+        local Object = {}
+
+        local function Update()
+
+            if Value then
+
+                Switch.BackgroundColor3 =
+                    Library.Theme.Accent
+
+                Circle.Position =
+                    UDim2.new(1, -18, 0, 2)
+
+                Circle.BackgroundColor3 =
+                    Library.Theme.Background
+
+            else
+
+                Switch.BackgroundColor3 =
+                    Color3.fromRGB(45, 45, 45)
+
+                Circle.Position =
+                    UDim2.fromOffset(2, 2)
+
+                Circle.BackgroundColor3 =
+                    Color3.fromRGB(255, 255, 255)
 
             end
 
-            self.Page.Visible = true
-
-            self.Button.BackgroundColor3 =
-                Library.Theme.Accent
-
-            self.Button.TextColor3 =
-                Library.Theme.Background
-
-        end
-
-        --=====================================================
-        -- SECTION
-        --=====================================================
-
-        function Tab:AddSection(name)
-
-            local Section = Create("TextLabel", {
-
-                Parent = self.Page,
-
-                Size = UDim2.new(1, -24, 0, 30),
-
-                BackgroundTransparency = 1,
-
-                Text = name,
-
-                TextColor3 =
-                    Library.Theme.SubText,
-
-                Font = Enum.Font.GothamBold,
-
-                TextSize = 12,
-
-                TextXAlignment =
-                    Enum.TextXAlignment.Left
-            })
-
-            return Section
-        end
-
-        --=====================================================
-        -- LABEL
-        --=====================================================
-
-        function Tab:AddLabel(text)
-
-            local Label = Create("TextLabel", {
-
-                Parent = self.Page,
-
-                Size = UDim2.new(1, -24, 0, 35),
-
-                BackgroundTransparency = 1,
-
-                Text = text,
-
-                TextColor3 =
-                    Library.Theme.SubText,
-
-                Font = Enum.Font.Gotham,
-
-                TextSize = 13,
-
-                TextWrapped = true,
-
-                TextXAlignment =
-                    Enum.TextXAlignment.Left
-            })
-
-            return Label
-        end
-
-        --=====================================================
-        -- BUTTON
-        --=====================================================
-
-        function Tab:AddButton(name, callback)
-
-            local Button = Create("TextButton", {
-
-                Parent = self.Page,
-
-                Size = UDim2.new(1, -24, 0, 42),
-
-                BackgroundColor3 =
-                    Library.Theme.Secondary,
-
-                Text = name,
-
-                TextColor3 =
-                    Library.Theme.Text,
-
-                Font = Enum.Font.GothamBold,
-
-                TextSize = 14,
-
-                AutoButtonColor = false,
-
-                BorderSizePixel = 0
-            })
-
-            AddCorner(Button, 9)
-            AddStroke(Button)
-
-            Button.MouseEnter:Connect(function()
-
-                TweenService:Create(
-                    Button,
-                    TweenInfo.new(0.15),
-                    {
-                        BackgroundColor3 =
-                            Library.Theme.Tertiary
-                    }
-                ):Play()
-
-            end)
-
-            Button.MouseLeave:Connect(function()
-
-                TweenService:Create(
-                    Button,
-                    TweenInfo.new(0.15),
-                    {
-                        BackgroundColor3 =
-                            Library.Theme.Secondary
-                    }
-                ):Play()
-
-            end)
-
-            Button.MouseButton1Click:Connect(function()
-
-                if callback then
-                    callback()
-                end
-
-            end)
-
-            return Button
-        end
-
-        --=====================================================
-        -- TOGGLE
-        --=====================================================
-
-        function Tab:AddToggle(name, default, callback)
-
-            local Value = default == true
-
-            local Button = Create("TextButton", {
-
-                Parent = self.Page,
-
-                Size = UDim2.new(1, -24, 0, 45),
-
-                BackgroundColor3 =
-                    Library.Theme.Secondary,
-
-                Text = "",
-
-                AutoButtonColor = false,
-
-                BorderSizePixel = 0
-            })
-
-            AddCorner(Button, 9)
-            AddStroke(Button)
-
-            local Label = Create("TextLabel", {
-
-                Parent = Button,
-
-                Size = UDim2.new(1, -70, 1, 0),
-
-                Position = UDim2.fromOffset(15, 0),
-
-                BackgroundTransparency = 1,
-
-                Text = name,
-
-                TextColor3 =
-                    Library.Theme.Text,
-
-                Font = Enum.Font.GothamBold,
-
-                TextSize = 14,
-
-                TextXAlignment =
-                    Enum.TextXAlignment.Left
-            })
-
-            local Switch = Create("Frame", {
-
-                Parent = Button,
-
-                Size = UDim2.fromOffset(38, 20),
-
-                Position = UDim2.new(
-                    1,
-                    -50,
-                    0.5,
-                    -10
-                ),
-
-                BackgroundColor3 =
-                    Color3.fromRGB(45, 45, 45),
-
-                BorderSizePixel = 0
-            })
-
-            AddCorner(Switch, 20)
-
-            local Circle = Create("Frame", {
-
-                Parent = Switch,
-
-                Size = UDim2.fromOffset(16, 16),
-
-                Position = UDim2.fromOffset(2, 2),
-
-                BackgroundColor3 =
-                    Color3.fromRGB(255, 255, 255),
-
-                BorderSizePixel = 0
-            })
-
-            AddCorner(Circle, 20)
-
-            local Object = {}
-
-            local function Update()
-
-                if Value then
-
-                    TweenService:Create(
-                        Switch,
-                        TweenInfo.new(0.15),
-                        {
-                            BackgroundColor3 =
-                                Library.Theme.Accent
-                        }
-                    ):Play()
-
-                    TweenService:Create(
-                        Circle,
-                        TweenInfo.new(0.15),
-                        {
-                            Position =
-                                UDim2.new(
-                                    1,
-                                    -18,
-                                    0,
-                                    2
-                                ),
-
-                            BackgroundColor3 =
-                                Library.Theme.Background
-                        }
-                    ):Play()
-
-                else
-
-                    TweenService:Create(
-                        Switch,
-                        TweenInfo.new(0.15),
-                        {
-                            BackgroundColor3 =
-                                Color3.fromRGB(
-                                    45,
-                                    45,
-                                    45
-                                )
-                        }
-                    ):Play()
-
-                    TweenService:Create(
-                        Circle,
-                        TweenInfo.new(0.15),
-                        {
-                            Position =
-                                UDim2.fromOffset(2, 2),
-
-                            BackgroundColor3 =
-                                Color3.fromRGB(
-                                    255,
-                                    255,
-                                    255
-                                )
-                        }
-                    ):Play()
-
-                end
-
-                if callback then
-                    callback(Value)
-                end
-
+            if callback then
+                callback(Value)
             end
 
-            function Object:Set(value)
+        end
 
-                Value = value == true
+        function Object:Set(value)
 
-                Update()
-
-            end
-
-            function Object:Get()
-
-                return Value
-
-            end
-
-            Button.MouseButton1Click:Connect(function()
-
-                Value = not Value
-
-                Update()
-
-            end)
+            Value = value == true
 
             Update()
 
-            return Object
         end
 
-        --=====================================================
-        -- REGISTER TAB
-        --=====================================================
+        function Object:Get()
 
-        table.insert(self.Tabs, Tab)
+            return Value
 
-        Button.MouseButton1Click:Connect(function()
-            Tab:Show()
+        end
+
+        ButtonObject.MouseButton1Click:Connect(function()
+
+            Value = not Value
+
+            Update()
+
         end)
 
-        if #self.Tabs == 1 then
-            Tab:Show()
-        end
+        Update()
 
-        return Tab
+        return Object
     end
 
-    --=========================================================
-    -- WINDOW METHODS
-    --=========================================================
+    --=====================================================
+    -- REGISTER TAB
+    --=====================================================
 
-    function Window:SetVisible(state)
+    table.insert(WindowObject.Tabs, Tab)
 
-        ScreenGui.Enabled = state == true
+    Button.MouseButton1Click:Connect(function()
 
-    end
+        Tab:Show()
 
-    function Window:Toggle()
+    end)
 
-        ScreenGui.Enabled =
-            not ScreenGui.Enabled
+    if #WindowObject.Tabs == 1 then
 
-    end
-
-    function Window:Destroy()
-
-        ScreenGui:Destroy()
+        Tab:Show()
 
     end
 
-    return Window
+    return Tab
 end
 
 --=============================================================
