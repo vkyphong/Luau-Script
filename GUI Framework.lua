@@ -739,13 +739,13 @@ function Library:CreateWindow(options)
         -- REGISTER TAB
         --=====================================================
 
-        table.insert(self.Window.Tabs, Tab)
+        table.insert(self.Tabs, Tab)
 
         Button.MouseButton1Click:Connect(function()
             Tab:Show()
         end)
 
-        if #self.Window.Tabs == 1 then
+        if #self.Tabs == 1 then
             Tab:Show()
         end
 
